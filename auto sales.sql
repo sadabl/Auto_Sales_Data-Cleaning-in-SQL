@@ -2,31 +2,36 @@
 
 -- Automobile sales data cleaning project 
 
--- Step 1: Inspecting the "fuel type" to ensure there is no invalid/erroneous type of fuel recored
-SELECT DISTINCT fuel_type
-FROM cars
+-- Note: Codes were written in Microsoft SQL Server Managemement Studio. The active database was 
+-- GoogleAnalytics, hence referencing the database each time was ommited in the codes below
 
 
--- Step 2: Inspecting the "length" to be sure it contains values between 141.1 to 208.1 
+-- Step 1: Inspecting fuel types to ensure there is no invalid/erroneous type of fuel included
+SELECT 
+	DISTINCT fuel_type
+FROM cars;
+
+
+-- Step 2: Inspecting the range of values for the "length" to ensure it is between 141.1 and 208.1 
 SELECT
   MIN(length) AS min_length,
   MAX(length) AS max_length
-FROM cars
+FROM cars;
 
 
--- Step 3: Checking if the "num of doors" column contains any missing values. 
--- Two missing values were found for Dodge and Mazda cars
+-- Step 3: Checking if the number of doors column contains any missing values 
 SELECT *
 FROM cars 
-WHERE num_of_doors IS NULL
+WHERE num_of_doors IS NULL;
 
 
--- Step 4: Updating the table so that all Dodge, gas and sedans have four doors 
+-- Two missing values were found for Dodge and Mazda cars
+-- Step 4: Updating the table so that all Dodge gas sedans have four doors 
 UPDATE cars
 SET num_of_doors = 'four'
 WHERE make = 'dodge'
   AND fuel_type = 'gas'
-  AND body_style = 'sedan'
+  AND body_style = 'sedan';
 
 
 -- Step 5: Updating the table so that all Mazda diesel sedans have four doors 
@@ -34,72 +39,114 @@ UPDATE cars
 SET num_of_doors = 'four'
 WHERE make = 'Mazda'
   AND fuel_type = 'diesel'
-  AND body_style = 'sedan'
+  AND body_style = 'sedan';
 
 
--- Step 6: Identifying potential errors in the number of cylinders 
+-- Step 6: Identifying potential errors in the number of cylinders recorded in the table
 SELECT 
   DISTINCT num_of_cylinders
 FROM cars;
 
 
--- Step 7: Correcting mispelled number of cylinders from "tow" to "Two" 
+-- Step 7: Correcting mispelled number of cylinders from "tow" to "two" 
 UPDATE cars
 SET num_of_cylinders = 'two'
-WHERE num_of_cylinders = 'tow'
+WHERE num_of_cylinders = 'tow';
 
 
---Instecpting if the update worked worked
-SELECT
-  DISTINCT num_of_cylinders
-FROM cars;
-
-
--- Step 8: Checking if the values for compression_ratio is outside the expected range of 7-23.  
+-- Step 8: Checking if the range for compression ratio is outside the expected values of 7 and 23  
 SELECT
   MIN(compression_ratio) AS min_compression_ratio,
   MAX(compression_ratio) AS max_compression_ratio
 FROM cars;
   
 
--- Step 9: Checking how many records have compression ratio more than 23 before they are deleted. 
--- This will prevent deleting significant data points. 
+-- Step 9: Checking how many records have compression ratio more than 23 before they are deleted 
+-- This prevents deleting significant data points that can impact the final analysis 
 SELECT
    COUNT(*) AS num_of_rows_to_delete
 FROM cars
 WHERE compression_ratio > 23;
 
--- Deleting records with compression_ratio > 23
+
+-- Step 10: Deleting records with compression ratio > 23. In real life, this may be updated instead of deleting 
 DELETE cars
-WHERE compression_ratio >23;
+WHERE compression_ratio > 23;
 
 
--- Step 10: Checking the drive_wheels column for inconsistencies.
--- "4wd" appears twice in results, suggesting an extra space.  
+-- Step 11: Finding missing or invalid data (0 or less) for price column
+SELECT *
+FROM cars
+WHERE price IS NULL
+	OR price <= 0;
+
+
+-- Step 12: Total number of missing or invalid prices before they are deleted 
+SELECT 
+	COUNT(*) AS rows_to_delete
+FROM cars
+WHERE price IS NULL
+	OR price <= 0;
+
+
+-- Step 13: Other erroneous or inconsistent prices
+SELECT 
+	DISTINCT price
+FROM cars
+ORDER BY price;
+
+
+-- Step 14: Deleting missing or invalid prices 
+DELETE cars
+Where price IS NULL
+	OR price <= 0;
+
+
+-- Step 15: Checking for invalid fuel systems
+SELECT 
+	DISTINCT fuel_system
+FROM cars;
+
+
+-- Step 16: Total number of invalid engine types before they are deleted
+SELECT 
+	COUNT(*)
+FROM cars
+WHERE engine_type ='l';
+
+
+-- Step 17: Deleting invalid engine types 
+DELETE cars 
+WHERE engine_type ='l';
+
+
+-- Step 18: Checking the drive_wheels column for inconsistencies
 SELECT
   DISTINCT drive_wheels
 FROM cars;
 
 
--- Step 10: Determining the length of the "drive_wheels" string variable.
+-- Step 19: Determining the length of the drive_wheels variable
 SELECT
   DISTINCT drive_wheels,
   LEN(drive_wheels) AS drive_wheels_length
 FROM cars;
 
 
--- Step 11: One of the "4wd" string has four characters instead of the expected three
--- Using TRIM function to remove all extra spaces in the drive_wheels column
+-- "4wd" appears twice in the results, suggesting extra spaces in the strings  
+-- Step 20: Using TRIM function to remove all extra spaces in the drive_wheels column
 UPDATE cars
-SET drive_wheels = TRIM(drive_wheels)
+SET drive_wheels 
+	= TRIM(drive_wheels)
 WHERE LEN(drive_wheels) = 4;
 
-SELECT
-  DISTINCT drive_wheels
-FROM cars;
+
+-- Step 21: Deleting incomplete or meaningless column
+ALTER TABLE cars
+DROP COLUMN Spr_latitudes;
 
 
--- Adding auto manufacturers' countries of origin
+-- Step 22: Adding auto manufacturers' country of origin
 ALTER TABLE cars
 ADD automaker_country VARCHAR(255);
 
@@ -145,17 +192,10 @@ Update cars
 SET automaker_country = 'Sweden'
 Where make = 'saab';
 
-
 Update cars
 SET automaker_country = 'British'
 Where make = 'jaguar';
 
-
 Update cars
 SET automaker_country = 'Italian'
 Where make = 'alfa-romero';
-
-
-Select *
-From cars
-Where automaker_country is NULL
