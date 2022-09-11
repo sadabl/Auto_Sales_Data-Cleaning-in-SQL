@@ -8,7 +8,7 @@
 
 -- Step 1: Inspecting fuel types to ensure there is no invalid/erroneous type of fuel included
 SELECT 
-	DISTINCT fuel_type
+  DISTINCT fuel_type
 FROM cars;
 
 
@@ -78,20 +78,20 @@ WHERE compression_ratio > 23;
 SELECT *
 FROM cars
 WHERE price IS NULL
-	OR price <= 0;
+   OR price <= 0;
 
 
 -- Step 12: Total number of missing or invalid prices before they are deleted 
 SELECT 
-	COUNT(*) AS rows_to_delete
+   COUNT(*) AS rows_to_delete
 FROM cars
 WHERE price IS NULL
-	OR price <= 0;
+   OR price <= 0;
 
 
 -- Step 13: Other erroneous or inconsistent prices
 SELECT 
-	DISTINCT price
+  DISTINCT price
 FROM cars
 ORDER BY price;
 
@@ -104,13 +104,13 @@ Where price IS NULL
 
 -- Step 15: Checking for invalid fuel systems
 SELECT 
-	DISTINCT fuel_system
+   DISTINCT fuel_system
 FROM cars;
 
 
 -- Step 16: Total number of invalid engine types before they are deleted
 SELECT 
-	COUNT(*)
+   COUNT(*)
 FROM cars
 WHERE engine_type ='l';
 
@@ -132,12 +132,11 @@ SELECT
   LEN(drive_wheels) AS drive_wheels_length
 FROM cars;
 
-
 -- "4wd" appears twice in the results, suggesting extra spaces in the strings  
 -- Step 20: Using TRIM function to remove all extra spaces in the drive_wheels column
 UPDATE cars
 SET drive_wheels 
-	= TRIM(drive_wheels)
+    = TRIM(drive_wheels)
 WHERE LEN(drive_wheels) = 4;
 
 
@@ -154,31 +153,31 @@ ADD automaker_country VARCHAR(255);
 Update cars
 SET automaker_country = 'Japan'
 Where 
-	make = 'toyota' OR
-	make = 'honda'  OR
-	make = 'isuzu'	OR 
-	make = 'mazda'	OR
-	make = 'mitsubishi' OR
-	make = 'nissan'	OR
-	make = 'subaru';
+   make = 'toyota' OR
+   make = 'honda'  OR
+   make = 'isuzu'  OR 
+   make = 'mazda'  OR
+   make = 'mitsubishi' OR
+   make = 'nissan' OR
+   make = 'subaru';
 	
 Update cars
 SET automaker_country = 'Germany'
 Where 
-	make = 'audi' OR
-	make = 'bmw'  OR
-	make = 'mercedes-benz'	OR 
-	make = 'porsche'	OR
-	make = 'volkswagen' OR
-	make =  'volvo';
+   make = 'audi' OR
+   make = 'bmw'  OR
+   make = 'mercedes-benz' OR 
+   make = 'porsche'	  OR
+   make = 'volkswagen'    OR
+   make =  'volvo';
 
 Update cars
 SET automaker_country = 'USA'
 Where 
-	make = 'chevrolet' OR
-	make = 'dodge'     OR
-	make = 'mercury'  OR 
-	make = 'plymouth';  
+   make = 'chevrolet' OR
+   make = 'dodge'     OR
+   make = 'mercury'  OR 
+   make = 'plymouth';  
 
 Update cars
 SET automaker_country = 'Italy'
